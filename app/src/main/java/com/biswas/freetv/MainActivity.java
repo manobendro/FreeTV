@@ -4,10 +4,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 
@@ -15,6 +17,7 @@ public class MainActivity extends ActionBarActivity {
     private Button button;
     private TextView textView;
     private WebView webView;
+    private static final String URL = "file:///android_asset/index.html";
     @SuppressWarnings("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +28,24 @@ public class MainActivity extends ActionBarActivity {
         button=(Button)findViewById(R.id.button);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebChromeClient(new WebChromeClient());
-        webView.setWebViewClient(new WebViewClient());
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                String user = textView.getText().toString();
+                if (user.isEmpty()) {
+                    user = "World";
+                }
+                String javascript = "javascript:document.getElementById('msg').innerHTML='Hello " + user + "!';";
+                view.loadUrl(javascript);
+            }
+        });
+        refreshWebView();
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                refreshWebView();
+            }
+        });
         
 
 
@@ -52,4 +72,8 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+    private void refreshWebView() {
+        webView.loadUrl(URL);
+    }
+
 }
